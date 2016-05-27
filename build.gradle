@@ -1,0 +1,45 @@
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+version =  '0.1.2'
+
+jar {
+    baseName = 'jdbcq'
+    manifest {
+       attributes 'Main-Class': 'Main'
+    }
+}
+
+task fatjar(type: Jar) {
+    baseName = project.name + '-all'
+    manifest {
+       attributes 'Main-Class': 'Main'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    with jar
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories { mavenLocal(); mavenCentral()  }
+dependencies {
+    compile('org.yaml:snakeyaml:1.15')
+    compile('org.postgresql:postgresql:9.4-1201-jdbc41')
+    compile('mysql:mysql-connector-java:5.1.35')
+    compile('com.oracle:ojdbc6:11.2.0.3')
+    compile('com.microsoft:sqljdbc:4.0.2206.100')
+    compile('net.sourceforge.jtds:jtds:1.3.1')
+    //compile('org.mongodb:mongo-java-driver:2.12.0')
+    //compile('unity:unityjdbc:0.1')
+//    compile('org.apache-extras.cassandra-jdbc:cassandra-jdbc:1.2.5')  // uses old protocol: thrift
+//    compile('org.slf4j:slf4j-nop:1.7.12')  // needed to quiet cassandra JDBC driver
+//    compile('com.datastax.cassandra:cassandra-driver-core:2.1.6')
+}
+
+task listjars << {
+    configurations.compile.each { File file -> println file.name }
+}
