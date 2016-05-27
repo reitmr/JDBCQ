@@ -5,64 +5,74 @@ JDCBQ is a command-line (cli) Java based JDBC query and performance measurement 
 It initially grew out of a need to evaluate different versions/vendors JDBC drivers but like any handy piece of software it's grown to inclue meta-data interrogation, column filting, and some driver specific features such as streaming.
 
 ## Quickstart
+    
+```cmd
+   $ gradle fatjar
+   $ java -jar build/libs/jdbcq-all-0.1.2.jar -d jdbc:mysql://localhost:3306/employees -u user -p user -i
+   MySQL Connector Java/mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 ) -> MySQL/5.6.14
+```
 
-    $ gradle fatjar
-    $ java -jar build/libs/jdbcq-all-0.1.2.jar -d jdbc:mysql://localhost:3306/employees -u user -p user -i
-    MySQL Connector Java/mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 ) -> MySQL/5.6.14
-    <strong>jdbcq></strong> show catalogs
-    TABLE_CAT
-    information_schema
-    employees
-    <strong>jdbcq></strong> show tables employees
-    TABLE_CAT	TABLE_SCHEM	TABLE_NAME  	TABLE_TYPE	REMARKS	TYPE_CAT	TYPE_SCHEM	TYPE_NAME	SELF_REFERENCING_COL_NAME	REF_GENERATION
-    employees	           	departments 	TABLE
-    employees	           	dept_emp    	TABLE
-    employees	           	dept_manager	TABLE
-    employees	           	employees   	TABLE
-    employees	           	salaries    	TABLE
-    employees	           	titles      	TABLE
-    <strong>jdbcq></strong> use employees
-    use is employees.
-    <strong>jdbcq></strong> show table titles
-    TABLE_CAT	TABLE_SCHEM	TABLE_NAME	COLUMN_NAME	DATA_TYPE	TYPE_NAME	COLUMN_SIZE	BUFFER_LENGTH	DECIMAL_DIGITS	NUM_PREC_RADIX	NULLABLE	REMARKS	COLUMN_DEF	SQL_DATA_TYPE	SQL_DATETIME_SUB	CHAR_OCTET_LENGTH	ORDINAL_POSITION	IS_NULLABLE	SCOPE_CATALOG	SCOPE_SCHEMA	SCOPE_TABLE	SOURCE_DATA_TYPE	IS_AUTOINCREMENT	IS_GENERATEDCOLUMN
-    employees	           	titles    	emp_no     	4        	INT      	10         	65535        	0             	10            	0       	       	          	0            	0               	                 	1               	NO         	             	            	           	                	NO
-    employees	           	titles    	title      	12       	VARCHAR  	50         	65535        	              	10            	0       	       	          	0            	0               	50               	2               	NO         	             	            	           	                	NO
-    employees	           	titles    	from_date  	91       	DATE     	10         	65535        	              	10            	0       	       	          	0            	0               	                 	3               	NO         	             	            	           	                	NO
-    employees	           	titles    	to_date    	91       	DATE     	10         	65535        	              	10            	1       	       	          	0            	0               	                 	4               	YES        	             	            	           	                	NO
-    keys (primary) emp_no,title,from_date (export)  (import) employees.emp_no->emp_no
-    indexes emp_no[primary:other:asc:1:442426:0],title[primary:other:asc:2:442426:0],from_date[primary:other:asc:3:442426:0],emp_no[emp_no:other:asc:1:442426:0]
-    <strong>jdbcq></strong> display titles
-    emp_no	title          	from_date 	to_date
-    10001 	Senior Engineer	1986-06-26	9999-01-01
-    10002 	Staff          	1996-08-03	9999-01-01
-    10003 	Senior Engineer	1995-12-03	9999-01-01
-    10004 	Engineer       	1986-12-01	1995-12-01
-    10004 	Senior Engineer	1995-12-01	9999-01-01
-    10005 	Senior Staff   	1996-09-12	9999-01-01
-    10005 	Staff          	1989-09-12	1996-09-12
-    10006 	Senior Engineer	1990-08-05	9999-01-01
-    10007 	Senior Staff   	1996-02-11	9999-01-01
-    10007 	Staff          	1989-02-10	1996-02-11
-    <strong>jdbcq></strong> display titles emp_no 10 12
-    emp_no	title             	from_date 	to_date
-    10007 	Staff             	1989-02-10	1996-02-11
-    10008 	Assistant Engineer	1998-03-11	2000-07-31
-    <strong>jdbcq></strong> select emp_no,title from titles limit 3
-    emp_no	title
-    10001 	Senior Engineer
-    10002 	Staff
-    10003 	Senior Engineer
-    <strong>jdbcq></strong> create table awesome (d date)
-    update count is 0
-    <strong>jdbcq></strong> describe awesome
-    COLUMN_NAME	COLUMN_TYPE	IS_NULLABLE	COLUMN_KEY	COLUMN_DEFAULT	EXTRA
-    d          	date       	YES
-    <strong>jdbcq></strong> drop table awesome
-    update count is 0
-    <strong>jdbcq></strong> show grants for user
-    Grants for user@%
-    GRANT USAGE ON *.* TO 'user'@'%' IDENTIFIED BY PASSWORD '*D5D9F81F5542DE067FFF5FF7A4CA4BDD322C578F'
-    GRANT ALL PRIVILEGES ON `employees`.* TO 'user'@'%'
+Once in interactive mode (-i on the command line) you can access the DB tables along with the metadata.
+```cmd
+   </>$ gradle fatjar
+   </>$ java -jar build/libs/jdbcq-all-0.1.2.jar -d jdbc:mysql://localhost:3306/employees -u user -p user -i
+   MySQL Connector Java/mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 ) -> MySQL/5.6.14
+   <jdbcq> show catalogs
+   TABLE_CAT
+   information_schema
+   employees
+   <jdbcq> show tables employees
+   TABLE_CAT	TABLE_SCHEM	TABLE_NAME  	TABLE_TYPE	REMARKS	TYPE_CAT	TYPE_SCHEM	TYPE_NAME	SELF_REFERENCING_COL_NAME	REF_GENERATION
+   employees	           	departments 	TABLE
+   employees	           	dept_emp    	TABLE
+   employees	           	dept_manager	TABLE
+   employees	           	employees   	TABLE
+   employees	           	salaries    	TABLE
+   employees	           	titles      	TABLE
+   <jdbcq> use employees
+   use is employees.
+   <jdbcq> show table titles
+   TABLE_CAT	TABLE_SCHEM	TABLE_NAME	COLUMN_NAME	DATA_TYPE	TYPE_NAME	COLUMN_SIZE	BUFFER_LENGTH	DECIMAL_DIGITS	NUM_PREC_RADIX	NULLABLE	REMARKS	COLUMN_DEF	SQL_DATA_TYPE	SQL_DATETIME_SUB	CHAR_OCTET_LENGTH	ORDINAL_POSITION	IS_NULLABLE	SCOPE_CATALOG	SCOPE_SCHEMA	SCOPE_TABLE	SOURCE_DATA_TYPE	IS_AUTOINCREMENT	IS_GENERATEDCOLUMN
+   employees	           	titles    	emp_no     	4        	INT      	10         	65535        	0             	10            	0       	       	          	0            	0               	                 	1               	NO         	             	            	           	                	NO
+   employees	           	titles    	title      	12       	VARCHAR  	50         	65535        	              	10            	0       	       	          	0            	0               	50               	2               	NO         	             	            	           	                	NO
+   employees	           	titles    	from_date  	91       	DATE     	10         	65535        	              	10            	0       	       	          	0            	0               	                 	3               	NO         	             	            	           	                	NO
+   employees	           	titles    	to_date    	91       	DATE     	10         	65535        	              	10            	1       	       	          	0            	0               	                 	4               	YES        	             	            	           	                	NO
+   keys (primary) emp_no,title,from_date (export)  (import) employees.emp_no->emp_no
+   indexes emp_no[primary:other:asc:1:442426:0],title[primary:other:asc:2:442426:0],from_date[primary:other:asc:3:442426:0],emp_no[emp_no:other:asc:1:442426:0]
+   <jdbcq> display titles
+   emp_no	title          	from_date 	to_date
+   10001 	Senior Engineer	1986-06-26	9999-01-01
+   10002 	Staff          	1996-08-03	9999-01-01
+   10003 	Senior Engineer	1995-12-03	9999-01-01
+   10004 	Engineer       	1986-12-01	1995-12-01
+   10004 	Senior Engineer	1995-12-01	9999-01-01
+   10005 	Senior Staff   	1996-09-12	9999-01-01
+   10005 	Staff          	1989-09-12	1996-09-12
+   10006 	Senior Engineer	1990-08-05	9999-01-01
+   10007 	Senior Staff   	1996-02-11	9999-01-01
+   10007 	Staff          	1989-02-10	1996-02-11
+   <jdbcq> display titles emp_no 10 12
+   emp_no	title             	from_date 	to_date
+   10007 	Staff             	1989-02-10	1996-02-11
+   10008 	Assistant Engineer	1998-03-11	2000-07-31
+   <jdbcq> select emp_no,title from titles limit 3
+   emp_no	title
+   10001 	Senior Engineer
+   10002 	Staff
+   10003 	Senior Engineer
+   <jdbcq> create table awesome (d date)
+   update count is 0
+   <jdbcq> describe awesome
+   COLUMN_NAME	COLUMN_TYPE	IS_NULLABLE	COLUMN_KEY	COLUMN_DEFAULT	EXTRA
+   d          	date       	YES
+   <jdbcq> drop table awesome
+   update count is 0
+   <jdbcq> show grants for user
+   Grants for user@%
+   GRANT USAGE ON *.* TO 'user'@'%' IDENTIFIED BY PASSWORD '*D5D9F81F5542DE067FFF5FF7A4CA4BDD322C578F'
+   GRANT ALL PRIVILEGES ON `employees`.* TO 'user'@'%'
+```
+## Introduction
 
 JDBCQ contains its own set of commands (type 'help') which provide a consistent interface across all DBs, any
 commands that JDBCQ does not know are passed straight through as sql statements (e.g. show grants) so you have
